@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Обучающая платформа</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .stats { display: flex; justify-content: space-around; margin: 40px 0; }
+        .stat { text-align: center; background: #3498db; color: white; padding: 20px; border-radius: 10px; }
+        .api-links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .api-link { background: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+        .api-link:hover { background: #219a52; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Обучающая платформа</h1>
+
+        <div class="stats">
+            <div class="stat">
+                <h2>{{ courses_count }}</h2>
+                <p>Курсов</p>
+            </div>
+            <div class="stat">
+                <h2>{{ lessons_count }}</h2>
+                <p>Уроков</p>
+            </div>
+            <div class="stat">
+                <h2>{{ payments_count }}</h2>
+                <p>Платежей</p>
+            </div>
+        </div>
+
+        <h2>📊 API endpoints:</h2>
+        <div class="api-links">
+            <a href="/api/courses/" class="api-link">📚 Курсы</a>
+            <a href="/api/users/payments/" class="api-link">💳 Платежи</a>
+            <a href="/api/users/payments/?course=1" class="api-link">🎯 Фильтр: Курс</a>
+            <a href="/admin/" class="api-link">⚙️ Админка</a>
+        </div>
+    </div>
+</body>
+</html>
