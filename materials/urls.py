@@ -12,11 +12,16 @@ app_name = "materials"
 router = DefaultRouter()
 router.register(r"courses", views.CourseViewSet)
 
+
 urlpatterns = [
     *router.urls,
+
     path("lessons/", views.LessonListCreateView.as_view()),
     path("lessons/<int:pk>/", views.LessonRetrieveUpdateDestroyView.as_view()),
     path(
         "courses/<int:course_id>/subscribe/", views.CourseSubscribeAPIView.as_view()
     ),  # ← views. !
+    path("lessons/", views.LessonListCreateView.as_view(), name="lesson-list-create"),
+    path("lessons/<int:pk>/", views.LessonRetrieveUpdateDestroyView.as_view(), name="lesson-detail"),
+
 ]

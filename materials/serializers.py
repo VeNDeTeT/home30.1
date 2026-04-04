@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Course, Lesson, CourseSubscription
 from .validators import youtube_link_validator
 
-
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source="owner.email")
@@ -18,6 +17,12 @@ class CourseSerializer(serializers.ModelSerializer):
             "owner",
             "is_subscribed",
         ]  # ← +is_subscribed
+
+    owner = serializers.ReadOnlyField(source='owner.email')
+
+    class Meta:
+        model = Course
+        fields = ["id", "title", "description", "lessons_count", "owner"]
 
     def get_lessons_count(self, obj):
         return Lesson.objects.filter(course=obj).count()
@@ -39,3 +44,11 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = ["id", "title", "description", "video_link", "owner"]
+
+class LessonSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.email')
+
+    class Meta:
+        model = Lesson
+        fields = ["id", "title", "description", "owner"]
+
