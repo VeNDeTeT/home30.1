@@ -74,4 +74,4 @@ class CourseSubscription(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ['user', 'course']  # Один курс - одна подписка
+        unique_together = ["user", "course"]  # Один курс - одна подписка
