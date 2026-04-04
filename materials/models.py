@@ -65,3 +65,11 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CourseSubscription(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["user", "course"]  # Один курс - одна подписка
