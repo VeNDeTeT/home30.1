@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -19,6 +20,11 @@ class Course(models.Model):
         null=True,
         verbose_name="Описание",
         help_text="Опишите название курса",
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Владелец",
     )
 
     class Meta:
@@ -49,6 +55,11 @@ class Lesson(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="lessons", verbose_name="Курс"
     )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Владелец",
+    )
 
     class Meta:
         verbose_name = "Урок"
@@ -56,3 +67,11 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CourseSubscription(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['user', 'course']  # Один курс - одна подписка
