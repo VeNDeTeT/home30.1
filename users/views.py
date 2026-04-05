@@ -21,12 +21,14 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 
 class PaymentListView(generics.ListAPIView):
-    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["course", "lesson", "payment_method"]
     ordering_fields = ["payment_date"]
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Payment.objects.filter(user=self.request.user)
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -36,8 +38,8 @@ class UserRegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]  # ← ДЛЯ ВСЕХ!
 
 
-class UserListCreateView(generics.ListCreateAPIView):
-    """Список + Создание пользователей (только авторизованные)"""
+class UserListView(generics.ListAPIView):
+    """Список пользователей (только авторизованные, без создания)"""
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
