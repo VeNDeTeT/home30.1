@@ -6,7 +6,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
 from .models import Course, Lesson, CourseSubscription
 from .serializers import CourseSerializer, LessonSerializer
 from .services import create_payment
@@ -24,12 +23,21 @@ class LessonPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 100
 
+class CoursePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+class LessonPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["id"]
+    filterset_fields = ['id']
     pagination_class = CoursePagination
 
     def perform_create(self, serializer):
@@ -42,25 +50,26 @@ class CourseViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-
 class LessonListCreateView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["course"]
+    filterset_fields = ['course']
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LessonPagination
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
 class LessonRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
         if self.request.method in ["PUT", "PATCH"]:
+        if self.action in ["update", "partial_update"]:
             permission_classes = [IsOwner]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -75,6 +84,9 @@ class CourseSubscribeAPIView(APIView):
         subscription, created = CourseSubscription.objects.get_or_create(
             user=request.user,
             course=course,
+
+            user=request.user, course=course
+
         )
         if created:
             message = "Подписка добавлена"
@@ -130,3 +142,5 @@ class CoursePaymentAPIView(APIView):
 
         payment_data = create_payment(course_id, request.user)
         return Response(payment_data, status=status.HTTP_201_CREATED)
+        return Response({"message": message})
+
