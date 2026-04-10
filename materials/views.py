@@ -11,6 +11,7 @@ from .models import Course, Lesson, CourseSubscription
 from .serializers import CourseSerializer, LessonSerializer
 from .services import create_payment
 from .permissions import IsOwner
+from .tasks import send_course_update_email  # <--- импорт Celery-задачи
 
 
 class CoursePagination(PageNumberPagination):
@@ -41,6 +42,23 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    def update(self, request, *args, **kwargs):
+        """
+        Обновление курса. После успешного обновления
+        запускаем асинхронную задачу отправки писем
+        всем подписчикам этого курса.
+        """
+        # стандартное поведение DRF (валидация + сохранение)
+        response = super().update(request, *args, **kwargs)
+
+        # получаем уже обновлённый объект курса
+        course = self.get_object()
+
+        # запускаем Celery-задачу
+        send_course_update_email.delay(course.id)
+
+        return response
 
 
 class LessonListCreateView(generics.ListCreateAPIView):
